@@ -1,4 +1,4 @@
-package upload
+package gdutils
 
 import (
 	"context"
