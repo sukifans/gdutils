@@ -49,7 +49,7 @@ func GetConfig(CredentialsPath string) *oauth2.Config {
 
 }
 
-//从文件中获取Token
+// GetTokenFromFile 从文件中获取Token
 func GetTokenFromFile(file string) (*oauth2.Token, error) {
 	f, err := os.Open(file)
 	if err != nil {
@@ -61,7 +61,7 @@ func GetTokenFromFile(file string) (*oauth2.Token, error) {
 	return tok, err
 }
 
-//网络请求token
+// GetTokenFromWeb 网络请求token
 // Request a token from the web, then returns the retrieved token.
 func GetTokenFromWeb(config *oauth2.Config, ProcessAuthURl func(AuthUrl string), ReturnAuthCode func() string) *oauth2.Token {
 	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
@@ -95,14 +95,14 @@ func SaveToken(path string, token *oauth2.Token) {
 
 }
 
-//获取客户端
+// GetClient 获取客户端
 func GetClient(config *oauth2.Config, tok *oauth2.Token) *http.Client {
 
 	return config.Client(context.Background(), tok)
 
 }
 
-//获取服务器
+// GetService 获取服务器
 func GetService(client *http.Client) *drive.Service {
 
 	ctx := context.Background()
@@ -127,7 +127,7 @@ func (s *ServerClient) GetDriveList(PageSize int64) (*drive.DriveList, error) {
 
 }
 
-//获取文件列表
+// GetFiles 获取文件列表
 func (s *ServerClient) GetFiles(DriveId string) ([]*drive.File, error) {
 
 	FileList, err := s.Server.Files.List().Corpora("drive").IncludeItemsFromAllDrives(true).SupportsAllDrives(true).DriveId(DriveId).Do()
@@ -142,7 +142,7 @@ func (s *ServerClient) GetFiles(DriveId string) ([]*drive.File, error) {
 
 }
 
-//获取文件夹列表
+// GetFolders 获取文件夹列表
 func (s *ServerClient) GetFolders(DriveId string) ([]*drive.File, error) {
 
 	FileList, err := s.Server.Files.List().Corpora("drive").Q("mimeType='application/vnd.google-apps.folder'").OrderBy("createdTime desc").IncludeItemsFromAllDrives(true).SupportsAllDrives(true).DriveId(DriveId).Do()
@@ -161,7 +161,7 @@ func (s *ServerClient) GetFolders(DriveId string) ([]*drive.File, error) {
 
 }
 
-//上传文件
+// Upload 上传文件
 func (s *ServerClient) Upload(FileName string, FolderId string, Reader io.Reader) (*drive.File, error) {
 
 	FileMeta := &drive.File{Name: FileName, Parents: []string{FolderId}}
