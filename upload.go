@@ -9,7 +9,6 @@ import (
 	"google.golang.org/api/drive/v3"
 	"google.golang.org/api/option"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -32,15 +31,9 @@ func NewServerClient(Server *drive.Service) ServerClient {
 
 }
 
-func GetConfig(CredentialsPath string) *oauth2.Config {
-
-	b, err := ioutil.ReadFile(CredentialsPath)
-	if err != nil {
-		log.Fatalf("Unable to read client secret file: %v", err)
-	}
-
+func GetConfig(Credentials []byte) *oauth2.Config {
 	// If modifying these scopes, delete your previously saved token-old.json.
-	config, err := google.ConfigFromJSON(b, drive.DriveScope)
+	config, err := google.ConfigFromJSON(Credentials, drive.DriveScope)
 	if err != nil {
 		log.Fatalf("Unable to parse client secret file to config: %v", err)
 	}
