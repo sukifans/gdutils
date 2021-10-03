@@ -42,6 +42,12 @@ func GetConfig(Credentials []byte) *oauth2.Config {
 
 }
 
+// GetTokenFromBytes 从bytes获取Token
+func GetTokenFromBytes(data []byte) (c *oauth2.Token, e error) {
+	e = json.Unmarshal(data, c)
+	return
+}
+
 // GetTokenFromFile 从文件中获取Token
 func GetTokenFromFile(file string) (*oauth2.Token, error) {
 	f, err := os.Open(file)
