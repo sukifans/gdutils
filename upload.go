@@ -94,15 +94,18 @@ func SaveToken(path string, token *oauth2.Token) {
 
 }
 
-// GetClient 获取客户端
-func GetClient(config *oauth2.Config, tok *oauth2.Token) *http.Client {
+// getClient 获取客户端
+func getClient(config *oauth2.Config, tok *oauth2.Token) *http.Client {
 
 	return config.Client(context.Background(), tok)
 
 }
 
 // GetService 获取服务器
-func GetService(client *http.Client) *drive.Service {
+// 进一步封装,优化结构
+func GetService(config *oauth2.Config, tok *oauth2.Token) *drive.Service {
+
+	client := getClient(config, tok)
 
 	ctx := context.Background()
 	srv, err := drive.NewService(ctx, option.WithHTTPClient(client))
