@@ -11,8 +11,8 @@ import (
 )
 
 type Token struct {
+	*oauth2.Token
 	c *oauth2.Config
-	t *oauth2.Token
 }
 
 func (a *Token) SaveTo(path string) error {
@@ -28,7 +28,7 @@ func (a *Token) SaveTo(path string) error {
 func (a *Token) NewService() (*ServerClient, error) {
 	srv, e := drive.NewService(
 		context.Background(),
-		option.WithHTTPClient(a.c.Client(context.Background(), a.t)),
+		option.WithHTTPClient(a.c.Client(context.Background(), a.Token)),
 	)
 	return (*ServerClient)(srv), e
 }

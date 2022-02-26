@@ -34,8 +34,8 @@ func (a *Config) raw() *oauth2.Config {
 func (a *Config) GetTokenFromBytes(data []byte) (*Token, error) {
 	var t oauth2.Token
 	return &Token{
-		c: a.raw(),
-		t: &t,
+		c:     a.raw(),
+		Token: &t,
 	}, json.Unmarshal(data, &t)
 }
 
@@ -48,8 +48,8 @@ func (a *Config) GetTokenFromFile(path string) (*Token, error) {
 	defer f.Close()
 	var tok oauth2.Token
 	return &Token{
-		c: a.raw(),
-		t: &tok,
+		c:     a.raw(),
+		Token: &tok,
 	}, json.NewDecoder(f).Decode(&tok)
 }
 
@@ -59,7 +59,7 @@ func (a *Config) GetTokenFromWeb(ProcessAuthURl func(AuthUrl string) (AuthCode s
 	tok, err := a.raw().Exchange(context.TODO(), ProcessAuthURl(a.raw().AuthCodeURL("state-token", oauth2.AccessTypeOffline)))
 
 	return &Token{
-		c: a.raw(),
-		t: tok,
+		c:     a.raw(),
+		Token: tok,
 	}, err
 }
