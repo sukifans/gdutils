@@ -11,7 +11,7 @@ type Drive struct {
 }
 
 // GetFiles 获取文件与文件夹列表
-func (d *Drive) GetFiles(FolderId string) ([]*drive.File, error) {
+func (d *Drive) GetFiles(FolderId string) (folders []*Folder, files []*File, err error) {
 	if FolderId == "" {
 		FolderId = d.id
 	}
@@ -23,10 +23,20 @@ func (d *Drive) GetFiles(FolderId string) ([]*drive.File, error) {
 		Q("'" + FolderId + "' in parents").
 		Do()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return FileList.Files, err
+	for i, v := range FileList.Files {
+		if v.MimeType == folderType {
+			folders = append(folders, &Folder{
+				File: FileList.Files[i],
+				d:    d,
+			})
+		} else {
+			files = append(files, (*File)(FileList.Files[i]))
+		}
+	}
+	return
 }
 
 func (d *Drive) Upload(FileName string, FolderId string, Reader io.Reader) (*File, error) {
