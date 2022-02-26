@@ -42,6 +42,9 @@ func (d *Drive) GetFolders() ([]*drive.File, error) {
 }
 
 func (d *Drive) Upload(FileName string, FolderId string, Reader io.Reader) (*drive.File, error) {
+	if FolderId == "" {
+		FolderId = d.id
+	}
 	return d.s.Upload(FileName, FolderId, Reader)
 }
 
