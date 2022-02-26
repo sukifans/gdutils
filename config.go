@@ -40,8 +40,8 @@ func (a *Config) GetTokenFromBytes(data []byte) (*Token, error) {
 }
 
 // GetTokenFromFile 从文件中获取Token
-func (a *Config) GetTokenFromFile(file string) (*Token, error) {
-	f, err := os.Open(file)
+func (a *Config) GetTokenFromFile(path string) (*Token, error) {
+	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
