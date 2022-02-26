@@ -29,7 +29,7 @@ func (d *Drive) GetFiles() ([]*drive.File, error) {
 // GetFolders 获取文件夹列表
 func (d *Drive) GetFolders() ([]*drive.File, error) {
 	FileList, err := d.s.Files.List().
-		Corpora("drive").Q("mimeType='application/vnd.google-apps.folder'").
+		Corpora("drive").Q("mimeType='" + folderType + "'").
 		OrderBy("createdTime desc").
 		IncludeItemsFromAllDrives(true).
 		SupportsAllDrives(true).
