@@ -14,6 +14,12 @@ func (s *ServerClient) GetDrive(DriveId string) *Drive {
 	}
 }
 
+// GetFile
+// Deprecated: todo
+func (s *ServerClient) GetFile(FileId string) *File {
+	return nil
+}
+
 // GetDriveList 获取为共享drive的id
 //不包含自己的drive
 func (s *ServerClient) GetDriveList(PageSize int64) (*drive.DriveList, error) {
