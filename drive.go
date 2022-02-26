@@ -10,22 +10,8 @@ type Drive struct {
 	id string
 }
 
-// GetFiles 获取文件列表
-func (d *Drive) GetFiles() ([]*drive.File, error) {
-	FileList, err := d.s.Files.List().
-		Corpora("drive").
-		IncludeItemsFromAllDrives(true).
-		SupportsAllDrives(true).
-		DriveId(d.id).Do()
-	if err != nil {
-		return nil, err
-	}
-
-	return FileList.Files, err
-}
-
-// GetFolders 获取文件夹列表
-func (d *Drive) GetFolders(FolderId string) ([]*drive.File, error) {
+// GetFiles 获取文件与文件夹列表
+func (d *Drive) GetFiles(FolderId string) ([]*drive.File, error) {
 	if FolderId == "" {
 		FolderId = d.id
 	}
