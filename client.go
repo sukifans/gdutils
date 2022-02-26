@@ -5,21 +5,21 @@ import (
 	"io"
 )
 
-type ServerClient struct {
-	Server   *drive.Service
-	FoldType string
+type ServerClient drive.Service
+
+func (s *ServerClient) Raw() *drive.Service {
+	return (*drive.Service)(s)
 }
 
-//获取为共享drive的id
+// GetDriveList 获取为共享drive的id
 //不包含自己的drive
-
 func (s *ServerClient) GetDriveList(PageSize int64) (*drive.DriveList, error) {
-	return s.Server.Drives.List().PageSize(PageSize).Do()
+	return s.Drives.List().PageSize(PageSize).Do()
 }
 
 // GetFiles 获取文件列表
 func (s *ServerClient) GetFiles(DriveId string) ([]*drive.File, error) {
-	FileList, err := s.Server.Files.List().Corpora("drive").IncludeItemsFromAllDrives(true).SupportsAllDrives(true).DriveId(DriveId).Do()
+	FileList, err := s.Files.List().Corpora("drive").IncludeItemsFromAllDrives(true).SupportsAllDrives(true).DriveId(DriveId).Do()
 	if err != nil {
 
 		return nil, err
@@ -31,7 +31,7 @@ func (s *ServerClient) GetFiles(DriveId string) ([]*drive.File, error) {
 
 // GetFolders 获取文件夹列表
 func (s *ServerClient) GetFolders(DriveId string) ([]*drive.File, error) {
-	FileList, err := s.Server.Files.List().
+	FileList, err := s.Files.List().
 		Corpora("drive").Q("mimeType='application/vnd.google-apps.folder'").
 		OrderBy("createdTime desc").
 		IncludeItemsFromAllDrives(true).
@@ -46,16 +46,16 @@ func (s *ServerClient) GetFolders(DriveId string) ([]*drive.File, error) {
 
 // Upload 上传文件
 func (s *ServerClient) Upload(FileName string, FolderId string, Reader io.Reader) (*drive.File, error) {
-	return s.Server.Files.Create(&drive.File{
+	return s.Files.Create(&drive.File{
 		Name:    FileName,
 		Parents: []string{FolderId}},
 	).Media(Reader).SupportsAllDrives(true).Do()
 }
 
 func (s ServerClient) CreateFolder(FolderName string, DriveId string) (*drive.File, error) {
-	return s.Server.Files.Create(&drive.File{
+	return s.Files.Create(&drive.File{
 		Name:    FolderName,
 		DriveId: DriveId, Parents: []string{DriveId},
-		MimeType: s.FoldType,
+		MimeType: folderType,
 	}).SupportsAllDrives(true).SupportsTeamDrives(true).Do()
 }

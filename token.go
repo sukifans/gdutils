@@ -7,7 +7,6 @@ import (
 	"golang.org/x/oauth2"
 	"google.golang.org/api/drive/v3"
 	"google.golang.org/api/option"
-	"log"
 	"os"
 )
 
@@ -26,17 +25,10 @@ func (a *Token) SaveTo(path string) error {
 	return json.NewEncoder(f).Encode(a)
 }
 
-func (a *Token) NewService() *ServerClient {
-	srv, err := drive.NewService(
+func (a *Token) NewService() (*ServerClient, error) {
+	srv, e := drive.NewService(
 		context.Background(),
 		option.WithHTTPClient(a.c.Client(context.Background(), a.t)),
 	)
-	if err != nil {
-		log.Fatalf("Unable to retrieve Drive client: %v", err)
-	}
-
-	return &ServerClient{
-		Server:   srv,
-		FoldType: "application/vnd.google-apps.folder",
-	}
+	return (*ServerClient)(srv), e
 }
