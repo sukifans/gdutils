@@ -18,22 +18,33 @@ func (d *Drive) GetFiles() ([]*drive.File, error) {
 		SupportsAllDrives(true).
 		DriveId(d.id).Do()
 	if err != nil {
-
 		return nil, err
-
 	}
 
 	return FileList.Files, err
 }
 
 // GetFolders 获取文件夹列表
-func (d *Drive) GetFolders() ([]*drive.File, error) {
-	FileList, err := d.s.Files.List().
-		Corpora("drive").Q("mimeType='" + folderType + "'").
-		OrderBy("createdTime desc").
-		IncludeItemsFromAllDrives(true).
-		SupportsAllDrives(true).
-		DriveId(d.id).Do()
+func (d *Drive) GetFolders(FolderId string) ([]*drive.File, error) {
+	var FileList *drive.FileList
+	var err error
+	if FolderId == "" {
+		FileList, err = d.s.Files.List().
+			Corpora("drive").Q("mimeType='" + folderType + "'").
+			OrderBy("createdTime desc").
+			IncludeItemsFromAllDrives(true).
+			SupportsAllDrives(true).
+			DriveId(d.id).Do()
+	} else {
+		FileList, err = d.s.Files.List().
+			Corpora("drive").
+			IncludeItemsFromAllDrives(true).
+			SupportsAllDrives(true).
+			DriveId(d.id).
+			Q("'" + FolderId + "' in parents").
+			Do()
+	}
+
 	if err != nil {
 		return nil, err
 	}
