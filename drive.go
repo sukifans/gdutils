@@ -29,21 +29,25 @@ func (d *Drive) GetFiles(FolderId string) ([]*drive.File, error) {
 	return FileList.Files, err
 }
 
-func (d *Drive) Upload(FileName string, FolderId string, Reader io.Reader) (*drive.File, error) {
+func (d *Drive) Upload(FileName string, FolderId string, Reader io.Reader) (*File, error) {
 	if FolderId == "" {
 		FolderId = d.id
 	}
 	return d.s.Upload(FileName, FolderId, Reader)
 }
 
-func (d *Drive) CreateFolder(FolderId string, FolderName string) (*drive.File, error) {
+func (d *Drive) CreateFolder(FolderId string, FolderName string) (*Folder, error) {
 	if FolderId == "" {
 		FolderId = d.id
 	}
-	return d.s.Files.Create(&drive.File{
+	f, e := d.s.Files.Create(&drive.File{
 		Name:    FolderName,
 		DriveId: d.id, Parents: []string{FolderId},
 		MimeType: folderType,
 	}).SupportsAllDrives(true).
 		SupportsTeamDrives(true).Do()
+	return &Folder{
+		File: f,
+		d:    d,
+	}, e
 }

@@ -21,9 +21,10 @@ func (s *ServerClient) GetDriveList(PageSize int64) (*drive.DriveList, error) {
 }
 
 // Upload 上传文件
-func (s *ServerClient) Upload(FileName string, FolderId string, Reader io.Reader) (*drive.File, error) {
-	return s.Files.Create(&drive.File{
+func (s *ServerClient) Upload(FileName string, FolderId string, Reader io.Reader) (*File, error) {
+	f, e := s.Files.Create(&drive.File{
 		Name:    FileName,
 		Parents: []string{FolderId}},
 	).Media(Reader).SupportsAllDrives(true).Do()
+	return (*File)(f), e
 }
