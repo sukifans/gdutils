@@ -33,7 +33,10 @@ func (d *Drive) GetFiles(FolderId string) (folders []*Folder, files []*File, err
 				d:    d,
 			})
 		} else {
-			files = append(files, (*File)(FileList.Files[i]))
+			files = append(files, &File{
+				File: FileList.Files[i],
+				s:    d.s,
+			})
 		}
 	}
 	return

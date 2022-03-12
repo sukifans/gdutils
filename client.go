@@ -3,6 +3,7 @@ package gdutils
 import (
 	"google.golang.org/api/drive/v3"
 	"io"
+	"net/http"
 )
 
 type ServerClient drive.Service
@@ -12,12 +13,6 @@ func (s *ServerClient) GetDrive(DriveId string) *Drive {
 		s:  s,
 		id: DriveId,
 	}
-}
-
-// GetFile
-// Deprecated: todo
-func (s *ServerClient) GetFile(FileId string) *File {
-	return nil
 }
 
 // GetDriveList 获取为共享drive的id
@@ -32,5 +27,22 @@ func (s *ServerClient) Upload(FileName string, FolderId string, Reader io.Reader
 		Name:    FileName,
 		Parents: []string{FolderId}},
 	).Media(Reader).SupportsAllDrives(true).Do()
-	return (*File)(f), e
+	return &File{
+		File: f,
+		s:    s,
+	}, e
+}
+
+// Download 下载文件
+func (s *ServerClient) Download(FileId string) (*http.Response, error) {
+	return s.Files.Get(FileId).
+		SupportsAllDrives(true).
+		Download()
+}
+
+// Delete 删除文件
+func (s *ServerClient) Delete(FileId string) error {
+	return s.Files.Delete(FileId).
+		SupportsAllDrives(true).
+		Do()
 }
