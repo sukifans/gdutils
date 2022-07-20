@@ -43,7 +43,8 @@ func (d *Drive) ListFiles(FolderId string) (folders []*Folder, files []*File, er
 }
 
 func (d *Drive) GetFile(FileId string) (*File, error) {
-	f, e := d.s.Files.Get(FileId).Do()
+	f, e := d.s.Files.Get(FileId).
+		SupportsAllDrives(true).Do()
 	return &File{
 		File: f,
 		s:    d.s,

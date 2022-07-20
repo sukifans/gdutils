@@ -11,10 +11,9 @@ type File struct {
 }
 
 func (f *File) Rename(name string) error {
-	name, f.Name = f.Name, name
-	n, e := f.s.Files.Update(f.Id, f.File).Do()
+	n, e := f.s.Files.Update(f.Id, &drive.File{Name: name}).
+		SupportsAllDrives(true).Do()
 	if e != nil {
-		f.Name = name
 		return e
 	}
 	f.File = n
