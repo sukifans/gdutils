@@ -10,6 +10,17 @@ type File struct {
 	s *ServerClient
 }
 
+func (f *File) Rename(name string) error {
+	name, f.Name = f.Name, name
+	n, e := f.s.Files.Update(f.Id, f.File).Do()
+	if e != nil {
+		f.Name = name
+		return e
+	}
+	f.File = n
+	return nil
+}
+
 func (f *File) Download() (*http.Response, error) {
 	return f.s.Download(f.Id)
 }
