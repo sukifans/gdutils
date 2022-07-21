@@ -10,6 +10,29 @@ type Drive struct {
 	s *ServerClient
 }
 
+func (d *Drive) Refresh() error {
+	t, e := d.s.GetDrive(d.Id)
+	if e != nil {
+		return e
+	}
+	d.Drive = t.Drive
+	return nil
+}
+
+func (d *Drive) GetFolder(FolderId string) (*Folder, error) {
+	f, e := d.s.GetFile(FolderId)
+	if e != nil {
+		return nil, e
+	}
+	if f.MimeType != folderType {
+		return nil, ErrNotFolder
+	}
+	return &Folder{
+		File: f.File,
+		d:    d,
+	}, nil
+}
+
 // ListFiles 获取文件与文件夹列表
 func (d *Drive) ListFiles(FolderId string) (folders []*Folder, files []*File, err error) {
 	if FolderId == "" {
@@ -40,29 +63,6 @@ func (d *Drive) ListFiles(FolderId string) (folders []*Folder, files []*File, er
 		}
 	}
 	return
-}
-
-func (d *Drive) GetFile(FileId string) (*File, error) {
-	f, e := d.s.Files.Get(FileId).
-		SupportsAllDrives(true).Do()
-	return &File{
-		File: f,
-		s:    d.s,
-	}, e
-}
-
-func (d *Drive) GetFolder(FolderId string) (*Folder, error) {
-	f, e := d.GetFile(FolderId)
-	if e != nil {
-		return nil, e
-	}
-	if f.MimeType != folderType {
-		return nil, ErrNotFolder
-	}
-	return &Folder{
-		File: f.File,
-		d:    d,
-	}, nil
 }
 
 func (d *Drive) Upload(FileName string, FolderId string, Reader io.Reader) (*File, error) {

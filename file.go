@@ -10,6 +10,15 @@ type File struct {
 	s *ServerClient
 }
 
+func (f *File) Refresh() error {
+	t, e := f.s.GetFile(f.Id)
+	if e != nil {
+		return e
+	}
+	f.File = t.File
+	return nil
+}
+
 func (f *File) Rename(name string) error {
 	n, e := f.s.Files.Update(f.Id, &drive.File{Name: name}).
 		SupportsAllDrives(true).Do()
