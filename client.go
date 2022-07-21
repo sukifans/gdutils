@@ -34,10 +34,16 @@ func (s *ServerClient) Upload(FileName string, FolderId string, Reader io.Reader
 }
 
 // Download 下载文件
-func (s *ServerClient) Download(FileId string) (*http.Response, error) {
-	return s.Files.Get(FileId).
-		SupportsAllDrives(true).
-		Download()
+func (s *ServerClient) Download(FileId string, opt *DownloadOpt) (*http.Response, error) {
+	req := s.Files.Get(FileId).
+		SupportsAllDrives(true)
+	if opt != nil {
+		header := req.Header()
+		if opt.Range != "" {
+			header.Set("Range", opt.Range)
+		}
+	}
+	return req.Download()
 }
 
 // Delete 删除文件

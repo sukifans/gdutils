@@ -20,8 +20,8 @@ func (f *File) Rename(name string) error {
 	return nil
 }
 
-func (f *File) Download() (*http.Response, error) {
-	return f.s.Download(f.Id)
+func (f *File) Download(opt *DownloadOpt) (*http.Response, error) {
+	return f.s.Download(f.Id, opt)
 }
 
 func (f *File) Delete() error {
