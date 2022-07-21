@@ -6,20 +6,20 @@ import (
 )
 
 type Drive struct {
-	s  *ServerClient
-	id string
+	*drive.Drive
+	s *ServerClient
 }
 
 // ListFiles 获取文件与文件夹列表
 func (d *Drive) ListFiles(FolderId string) (folders []*Folder, files []*File, err error) {
 	if FolderId == "" {
-		FolderId = d.id
+		FolderId = d.Id
 	}
 	FileList, err := d.s.Files.List().
 		Corpora("drive").
 		IncludeItemsFromAllDrives(true).
 		SupportsAllDrives(true).
-		DriveId(d.id).
+		DriveId(d.Id).
 		Q("'" + FolderId + "' in parents").
 		Do()
 	if err != nil {
@@ -67,18 +67,18 @@ func (d *Drive) GetFolder(FolderId string) (*Folder, error) {
 
 func (d *Drive) Upload(FileName string, FolderId string, Reader io.Reader) (*File, error) {
 	if FolderId == "" {
-		FolderId = d.id
+		FolderId = d.Id
 	}
 	return d.s.Upload(FileName, FolderId, Reader)
 }
 
 func (d *Drive) CreateFolder(FolderId string, FolderName string) (*Folder, error) {
 	if FolderId == "" {
-		FolderId = d.id
+		FolderId = d.Id
 	}
 	f, e := d.s.Files.Create(&drive.File{
 		Name:    FolderName,
-		DriveId: d.id, Parents: []string{FolderId},
+		DriveId: d.Id, Parents: []string{FolderId},
 		MimeType: folderType,
 	}).SupportsAllDrives(true).
 		SupportsTeamDrives(true).Do()

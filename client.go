@@ -8,11 +8,15 @@ import (
 
 type ServerClient drive.Service
 
-func (s *ServerClient) GetDrive(DriveId string) *Drive {
-	return &Drive{
-		s:  s,
-		id: DriveId,
+func (s *ServerClient) GetDrive(DriveId string) (*Drive, error) {
+	d, e := s.Drives.Get(DriveId).Do()
+	if e != nil {
+		return nil, e
 	}
+	return &Drive{
+		Drive: d,
+		s:     s,
+	}, nil
 }
 
 // GetDriveList 获取为共享drive的id
