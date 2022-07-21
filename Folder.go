@@ -1,12 +1,11 @@
 package gdutils
 
 import (
-	"google.golang.org/api/drive/v3"
 	"io"
 )
 
 type Folder struct {
-	*drive.File
+	*File
 	d *Drive
 }
 

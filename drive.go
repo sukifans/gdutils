@@ -28,7 +28,7 @@ func (d *Drive) GetFolder(FolderId string) (*Folder, error) {
 		return nil, ErrNotFolder
 	}
 	return &Folder{
-		File: f.File,
+		File: f,
 		d:    d,
 	}, nil
 }
@@ -50,16 +50,17 @@ func (d *Drive) ListFiles(FolderId string) (folders []*Folder, files []*File, er
 	}
 
 	for i, v := range FileList.Files {
+		f := File{
+			File: FileList.Files[i],
+			s:    d.s,
+		}
 		if v.MimeType == folderType {
 			folders = append(folders, &Folder{
-				File: FileList.Files[i],
+				File: &f,
 				d:    d,
 			})
 		} else {
-			files = append(files, &File{
-				File: FileList.Files[i],
-				s:    d.s,
-			})
+			files = append(files, &f)
 		}
 	}
 	return
@@ -83,7 +84,10 @@ func (d *Drive) CreateFolder(FolderId string, FolderName string) (*Folder, error
 	}).SupportsAllDrives(true).
 		SupportsTeamDrives(true).Do()
 	return &Folder{
-		File: f,
-		d:    d,
+		File: &File{
+			File: f,
+			s:    d.s,
+		},
+		d: d,
 	}, e
 }
