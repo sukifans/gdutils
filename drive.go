@@ -7,11 +7,11 @@ import (
 
 type Drive struct {
 	*drive.Drive
-	s *ServerClient
+	*ServerClient
 }
 
 func (d *Drive) Refresh() error {
-	t, e := d.s.GetDrive(d.Id)
+	t, e := d.GetDrive(d.Id)
 	if e != nil {
 		return e
 	}
@@ -20,7 +20,7 @@ func (d *Drive) Refresh() error {
 }
 
 func (d *Drive) GetFolder(FolderId string) (*Folder, error) {
-	f, e := d.s.GetFile(FolderId)
+	f, e := d.GetFile(FolderId)
 	if e != nil {
 		return nil, e
 	}
@@ -38,7 +38,7 @@ func (d *Drive) ListFiles(FolderId string) (folders []*Folder, files []*File, er
 	if FolderId == "" {
 		FolderId = d.Id
 	}
-	FileList, err := d.s.Files.List().
+	FileList, err := d.Files.List().
 		Corpora("drive").
 		IncludeItemsFromAllDrives(true).
 		SupportsAllDrives(true).
@@ -52,7 +52,7 @@ func (d *Drive) ListFiles(FolderId string) (folders []*Folder, files []*File, er
 	for i, v := range FileList.Files {
 		f := File{
 			File: FileList.Files[i],
-			s:    d.s,
+			s:    d.ServerClient,
 		}
 		if v.MimeType == folderType {
 			folders = append(folders, &Folder{
@@ -70,14 +70,14 @@ func (d *Drive) Upload(FileName string, FolderId string, Reader io.Reader) (*Fil
 	if FolderId == "" {
 		FolderId = d.Id
 	}
-	return d.s.Upload(FileName, FolderId, Reader)
+	return d.Upload(FileName, FolderId, Reader)
 }
 
 func (d *Drive) CreateFolder(FolderId string, FolderName string) (*Folder, error) {
 	if FolderId == "" {
 		FolderId = d.Id
 	}
-	f, e := d.s.Files.Create(&drive.File{
+	f, e := d.Files.Create(&drive.File{
 		Name:    FolderName,
 		DriveId: d.Id, Parents: []string{FolderId},
 		MimeType: folderType,
@@ -86,7 +86,7 @@ func (d *Drive) CreateFolder(FolderId string, FolderName string) (*Folder, error
 	return &Folder{
 		File: &File{
 			File: f,
-			s:    d.s,
+			s:    d.ServerClient,
 		},
 		d: d,
 	}, e
