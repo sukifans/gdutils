@@ -10,6 +10,27 @@ type File struct {
 	s *ServerClient
 }
 
+func (f *File) CopyTo(folderID string) error {
+	t, e := f.s.Files.Update(f.Id, &drive.File{}).
+		SupportsAllDrives(true).AddParents(folderID).Do()
+	if e != nil {
+		return e
+	}
+	f.File = t
+	return nil
+}
+
+func (f *File) Copy(driveID, folderID string) (*File, error) {
+	t, e := f.s.Files.Copy(f.Id, &drive.File{
+		DriveId: driveID,
+		Parents: []string{folderID},
+	}).SupportsAllDrives(true).Do()
+	return &File{
+		File: t,
+		s:    f.s,
+	}, e
+}
+
 func (f *File) Refresh() error {
 	t, e := f.s.GetFile(f.Id)
 	if e != nil {

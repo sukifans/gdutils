@@ -14,8 +14,8 @@ func (s *ServerClient) GetDrive(DriveId string) (*Drive, error) {
 		return nil, e
 	}
 	return &Drive{
-		Drive: d,
-		s:     s,
+		Drive:        d,
+		ServerClient: s,
 	}, nil
 }
 
